@@ -1,10 +1,11 @@
 from django.db import models
+import datetime
 
 
 class Category(models.Model):
 
     category_name = models.CharField(
-        max_length=100, unique=True, verbose_name="Категория"
+        max_length=100, verbose_name="Категория"
     )
 
     class Meta:
@@ -18,7 +19,7 @@ class Category(models.Model):
 class City(models.Model):
 
     city_name = models.CharField(
-        max_length=100, unique=True, verbose_name="Город"
+        max_length=100, verbose_name="Город"
     )
 
     class Meta:
@@ -32,7 +33,7 @@ class City(models.Model):
 class Location(models.Model):
 
     location_name = models.CharField(
-        max_length=400, unique=True, verbose_name="Название места"
+        max_length=400, verbose_name="Название места"
     )
     city_id = models.ForeignKey(City, on_delete=models.CASCADE, verbose_name="Город")
 
@@ -48,7 +49,7 @@ class Location(models.Model):
 class Event(models.Model):
 
     event_name = models.CharField(
-        max_length=200, unique=True, verbose_name="Название мероприятия"
+        max_length=200, verbose_name="Название мероприятия"
     )
 
     class Meta:
@@ -64,7 +65,8 @@ class EventList(models.Model):
     event_id = models.ForeignKey(Event, on_delete=models.CASCADE, verbose_name="Мероприятие")
     category_id = models.ForeignKey(Category, on_delete=models.CASCADE, verbose_name="Категория")
     location_id = models.ForeignKey(Location, on_delete=models.CASCADE, verbose_name="Место проведения")
-    date_time = models.DateTimeField(verbose_name="Дата и время проведения")
+    date = models.DateField(verbose_name="Дата мероприятия", default=datetime.date(2024, 4, 20))
+    time = models.TimeField(verbose_name="Время мероприятия", default=datetime.time(10, 0, 0))
     price = models.IntegerField(verbose_name="Цена билета", default=0)
 
     class Meta:
@@ -72,4 +74,4 @@ class EventList(models.Model):
         verbose_name_plural = "Список мероприятий"
 
     def __str__(self):
-        return f'{self.event_id} - {self.date_time}'
+        return f'{self.event_id} - {self.location_id} - {self.date} - {self.time}'

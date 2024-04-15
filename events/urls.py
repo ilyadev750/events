@@ -7,6 +7,8 @@ from events_app.views import *
 router = routers.DefaultRouter()
 router.register(r'categories', CategoryViewSet)
 router.register(r'locations', LocationViewSet)
+router.register(r'events', EventViewSet)
+router.register(r'events-list', EventListViewSet)
 
 urlpatterns = [
     path('admin/', admin.site.urls),

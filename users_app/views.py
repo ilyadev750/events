@@ -1,14 +1,15 @@
 from django.shortcuts import render
-# from rest_framework import viewsets
-# from rest_framework.views import APIView
+from .models import Token
 from rest_framework_simplejwt.tokens import RefreshToken
+from rest_framework.permissions import AllowAny, IsAuthenticated 
 from django.contrib.auth import authenticate, logout
-from rest_framework.decorators import api_view
+from rest_framework.decorators import api_view, permission_classes
 from rest_framework.response import Response
 from .serializers import UserSerializer
 
 
 @api_view(['POST'])
+@permission_classes([AllowAny])
 def register_user(request):
     if request.method == 'POST':
         serializer = UserSerializer(data=request.data)
@@ -19,6 +20,7 @@ def register_user(request):
     
 
 @api_view(['POST'])
+@permission_classes([AllowAny])
 def user_login(request):
     if request.method == 'POST':
         username = request.data.get('username')
@@ -33,6 +35,11 @@ def user_login(request):
             'username': user.username
         })
 
+        token = Token.objects.create(user_id=user)
+        token.refresh_token = str(refresh)
+        token.access_token = str(refresh.access_token)
+        token.save()
+        
         return Response({
             'refresh': str(refresh),
             'access': str(refresh.access_token),
@@ -40,15 +47,18 @@ def user_login(request):
     
 
 @api_view(['POST'])
+@permission_classes([IsAuthenticated])
 def user_logout(request):
     if request.method == 'POST':
         refresh_token = request.data.get('refresh_token')
         if not refresh_token:
-            return Response({'Ошибка': 'Необходим Refresh token'})
+            return Response({'Ошибка': 'Необходим Refresh токен'})
         try:
             token = RefreshToken(refresh_token)
-            print(token)
             token.blacklist()
+            token = Token.objects.get(refresh_token=refresh_token)
+            token.delete()
+
         except Exception:
-            return Response({'Ошибка': 'Неверный Refresh token'})
+            return Response({'Ошибка': 'Неверный Refresh токен'})
         return Response({'Успех': 'Выход из системы произведен'})

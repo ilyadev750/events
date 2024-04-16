@@ -1,7 +1,7 @@
 from django.shortcuts import render
 from rest_framework import viewsets
 from rest_framework.views import APIView
-from rest_framework.permissions import IsAuthenticated
+from rest_framework.permissions import IsAuthenticated, IsAdminUser
 from rest_framework.response import Response
 from .models import Category, City, Location, Event, EventList
 from .serializers import (CitySerializer, CategorySerializer,
@@ -10,6 +10,8 @@ from .serializers import (CitySerializer, CategorySerializer,
 
 
 class CityAPIView(APIView):
+    permission_classes = (IsAdminUser, )
+
     def get(self, request, *args, **kwargs):
         pk = kwargs.get("pk", None)
 
@@ -57,17 +59,32 @@ class CityAPIView(APIView):
 class CategoryViewSet(viewsets.ModelViewSet):
     queryset = Category.objects.all()
     serializer_class = CategorySerializer
+    permission_classes = (IsAdminUser, )
 
 
 class EventViewSet(viewsets.ModelViewSet):
     queryset = Event.objects.all()
     serializer_class = EventSerializer
-    permission_classes = (IsAuthenticated, )
+
+    def get_permissions(self):
+        permission_classes = []
+        if self.action == 'create':
+            permission_classes = [IsAdminUser]
+        elif self.action == 'list':
+            permission_classes = [IsAuthenticated]
+        elif self.action == 'retrieve':
+            permission_classes = [IsAuthenticated]
+        elif self.action == 'update':
+            permission_classes = [IsAdminUser]
+        elif self.action == 'destroy':
+            permission_classes = [IsAdminUser]
+        return [permission() for permission in permission_classes]
 
 
 class LocationViewSet(viewsets.ModelViewSet):
     queryset = Location.objects.all()
     serializer_class = LocationSerializer
+    permission_classes = (IsAdminUser, )
 
     def create(self, request):
         serializer = LocationSerializer(data=request.data)
@@ -92,8 +109,23 @@ class LocationViewSet(viewsets.ModelViewSet):
 
 
 class EventListViewSet(viewsets.ModelViewSet):
+    
     queryset = EventList.objects.all()
     serializer_class = EventListSerializer
+
+    def get_permissions(self):
+        permission_classes = []
+        if self.action == 'create':
+            permission_classes = [IsAdminUser]
+        elif self.action == 'list':
+            permission_classes = [IsAuthenticated]
+        elif self.action == 'retrieve':
+            permission_classes = [IsAuthenticated]
+        elif self.action == 'update':
+            permission_classes = [IsAdminUser]
+        elif self.action == 'destroy':
+            permission_classes = [IsAdminUser]
+        return [permission() for permission in permission_classes]
 
     def create(self, request):
         serializer = EventListSerializer(data=request.data)

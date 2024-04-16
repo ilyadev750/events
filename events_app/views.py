@@ -1,6 +1,7 @@
 from django.shortcuts import render
 from rest_framework import viewsets
 from rest_framework.views import APIView
+from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from .models import Category, City, Location, Event, EventList
 from .serializers import (CitySerializer, CategorySerializer,
@@ -61,6 +62,7 @@ class CategoryViewSet(viewsets.ModelViewSet):
 class EventViewSet(viewsets.ModelViewSet):
     queryset = Event.objects.all()
     serializer_class = EventSerializer
+    permission_classes = (IsAuthenticated, )
 
 
 class LocationViewSet(viewsets.ModelViewSet):

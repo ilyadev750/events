@@ -1,11 +1,10 @@
-from django.shortcuts import render
 from .models import Token, EventRegistration
 from rest_framework_simplejwt.tokens import RefreshToken
-from rest_framework.permissions import AllowAny, IsAuthenticated 
-from django.contrib.auth import authenticate, logout
+from rest_framework.permissions import AllowAny, IsAuthenticated
+from django.contrib.auth import authenticate
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework.response import Response
-from .serializers import UserSerializer, UserEventSerializer, EventRegistrationSerializer
+from .serializers import UserSerializer, EventRegistrationSerializer
 from rest_framework import viewsets
 
 
@@ -22,29 +21,31 @@ class EventRegistrationViewSet(viewsets.ModelViewSet):
         user = (Token.objects.get(access_token=request.auth)).user_id
 
         if (user.first_name == request.data['user_id']['first_name']
-            and user.last_name == request.data['user_id']['last_name']
-            and user.email == request.data['user_id']['email']):
-                serializer = EventRegistrationSerializer(data=request.data)
-                serializer.is_valid(raise_exception=True)
-                serializer.save()
-                return Response({'event_registration': serializer.data})
+                and user.last_name == request.data['user_id']['last_name']
+                and user.email == request.data['user_id']['email']):
+
+            serializer = EventRegistrationSerializer(data=request.data)
+            serializer.is_valid(raise_exception=True)
+            serializer.save()
+            return Response({'event_registration': serializer.data})
         else:
             return Response({'Ошибка': "Неверный пользователь"})
-        
+
     def destroy(self, request, *args, **kwargs):
         pk = kwargs.get("pk", None)
         if not pk:
             return Response({"Ошибка": "События не существует!"})
-        
+
         user_register_event = EventRegistration.objects.get(pk=pk)
         if user_register_event.user_id == self.request.user:
             user_register_event.delete()
-            return Response({"Успех": "Вы успешно отменили запись на данное событие!"})
+            return Response(
+                {"Успех": "Вы успешно отменили запись на данное событие!"}
+                )
         else:
-            return Response({"Ошибка": "Вы не зарегистрированы на данное событие!"})
-
-
-    
+            return Response(
+                {"Ошибка": "Вы не зарегистрированы на данное событие!"}
+                )
 
 
 @api_view(['POST'])
@@ -56,7 +57,7 @@ def register_user(request):
             serializer.save()
             return Response(serializer.data)
         return Response(serializer.errors)
-    
+
 
 @api_view(['POST'])
 @permission_classes([AllowAny])
@@ -67,7 +68,7 @@ def user_login(request):
         user = authenticate(username=username, password=password)
         if not user:
             return Response({"Ошибка": "Неверное имя пользователя или пароль"})
-        
+
         refresh = RefreshToken.for_user(user)
         refresh.payload.update({
             'user_id': user.id,
@@ -78,12 +79,12 @@ def user_login(request):
         token.refresh_token = str(refresh)
         token.access_token = str(refresh.access_token)
         token.save()
-        
+
         return Response({
             'refresh': f'{token.refresh_token}',
             'access': f'{token.access_token}',
         })
-    
+
 
 @api_view(['POST'])
 def user_logout(request):
@@ -100,7 +101,7 @@ def user_logout(request):
         except Exception:
             return Response({'Ошибка': 'Неверный Refresh токен'})
         return Response({'Успех': 'Выход из системы произведен'})
-    
+
 
 @api_view(['POST'])
 def user_refresh_token(request):
@@ -119,8 +120,4 @@ def user_refresh_token(request):
         except Exception:
             return Response({'Ошибка': 'Неверный Refresh токен'})
         return Response({'Успех': 'Access token обновлен',
-                         'access_token': f'{token.access_token}' })
-    
-
-
-
+                         'access_token': f'{token.access_token}'})

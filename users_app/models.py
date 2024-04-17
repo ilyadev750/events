@@ -5,9 +5,15 @@ from events_app.models import EventList
 
 class Token(models.Model):
 
-    user_id = models.ForeignKey(User, on_delete=models.CASCADE, verbose_name="Пользователь")
-    access_token = models.CharField(max_length=400, verbose_name='access_token')
-    refresh_token = models.CharField(max_length=400, verbose_name='refresh_token')
+    user_id = models.ForeignKey(
+        User, on_delete=models.CASCADE, verbose_name="Пользователь"
+        )
+    access_token = models.CharField(
+        max_length=400, verbose_name='access_token'
+        )
+    refresh_token = models.CharField(
+        max_length=400, verbose_name='refresh_token'
+        )
 
     class Meta:
         verbose_name = "Токен"
@@ -19,9 +25,15 @@ class Token(models.Model):
 
 
 class EventRegistration(models.Model):
-    event_list_id = models.ForeignKey(EventList, on_delete=models.CASCADE, verbose_name="Событие")
-    user_id = models.ForeignKey(User, on_delete=models.CASCADE, verbose_name="Пользователь")
-    is_registered = models.BooleanField(default=True, verbose_name="Зарегистрирован")
+    event_list_id = models.ForeignKey(
+        EventList, on_delete=models.CASCADE, verbose_name="Событие"
+        )
+    user_id = models.ForeignKey(
+        User, on_delete=models.CASCADE, verbose_name="Пользователь"
+        )
+    is_registered = models.BooleanField(
+        default=True, verbose_name="Зарегистрирован"
+        )
 
     class Meta:
         verbose_name = "Регистрация на мероприятие"

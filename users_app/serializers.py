@@ -1,7 +1,7 @@
 from django.contrib.auth.models import User
 from .models import EventRegistration
 from events_app.models import EventList, Event, Category, City, Location
-from rest_framework import serializers 
+from rest_framework import serializers
 from events_app.serializers import EventListSerializer
 
 
@@ -31,12 +31,11 @@ class UserEventSerializer(serializers.ModelSerializer):
         fields = ('first_name', 'last_name', 'email')
 
 
-
 class EventRegistrationSerializer(serializers.ModelSerializer):
     event_list_id = EventListSerializer(many=False)
     user_id = UserEventSerializer(many=False)
 
-    class Meta: 
+    class Meta:
         model = EventRegistration
         fields = "__all__"
 
@@ -65,36 +64,5 @@ class EventRegistrationSerializer(serializers.ModelSerializer):
             event_list_id=event_list,
             user_id=user,
             is_registered=True)
-        
+
         return event_registration
-
-
-# {
-#     "event_list_id": {
-#         "id": 2,
-#         "event_id": {
-#               "id": 1,
-#               "event_name": "Ничего не бойся, я с тобой"
-#          },
-#          "category_id": {
-#              "id": 3,
-#              "category_name": "Мюзикл"
-#          },
-#          "location_id": {
-#              "city_id": {
-#                  "id": 1,
-#                  "city_name": "Москва"
-#              },
-#              "location_name": "Московский Дом Молодежи"
-#          },
-#          "date": "2024-04-15",
-#          "time": "14:00:00",
-#          "price": 3000
-#     },
-#     "user_id": {
-#         "first_name": "И",
-#         "last_name": "П",
-#         "email": "w@ya.ru"
-#     },
-#     "is_registered": "True"
-# }

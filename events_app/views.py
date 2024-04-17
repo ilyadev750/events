@@ -1,4 +1,3 @@
-from django.shortcuts import render
 from rest_framework import viewsets
 from rest_framework.views import APIView
 from rest_framework.permissions import IsAuthenticated, IsAdminUser
@@ -21,7 +20,7 @@ class CityAPIView(APIView):
         else:
             cities = City.objects.all()
             return Response({'cities': CitySerializer(cities, many=True).data})
-    
+
     def post(self, request):
         serializer = CitySerializer(data=request.data)
         serializer.is_valid(raise_exception=True)
@@ -37,24 +36,24 @@ class CityAPIView(APIView):
             instance = City.objects.get(pk=pk)
         except:
             return Response({"error": "City does not exists!"})
-        
+
         serializer = CitySerializer(data=request.data, instance=instance)
         serializer.is_valid(raise_exception=True)
         serializer.save()
         return Response({'city': serializer.data})
-    
+
     def delete(self, request, *args, **kwargs):
         pk = kwargs.get("pk", None)
         if not pk:
             return Response({"Ошибка": "Выберите правильный город!"})
-        
+
         try:
             instance = City.objects.get(pk=pk)
             instance.delete()
             return Response({"Успех": "Город удален!"})
         except:
             return Response({"Ошибка": "Город не существует!"})
-        
+
 
 class CategoryViewSet(viewsets.ModelViewSet):
     queryset = Category.objects.all()
@@ -91,7 +90,7 @@ class LocationViewSet(viewsets.ModelViewSet):
         serializer.is_valid(raise_exception=True)
         serializer.save()
         return Response({'location': serializer.data})
-    
+
     def update(self, request, *args, **kwargs):
         pk = kwargs.get("pk", None)
         if not pk:
@@ -101,7 +100,7 @@ class LocationViewSet(viewsets.ModelViewSet):
             instance = Location.objects.get(pk=pk)
         except:
             return Response({"Ошибка": "Локация не существует!"})
-        
+
         serializer = LocationSerializer(data=request.data, instance=instance)
         serializer.is_valid(raise_exception=True)
         serializer.save()
@@ -109,10 +108,10 @@ class LocationViewSet(viewsets.ModelViewSet):
 
 
 class EventListViewSet(viewsets.ModelViewSet):
-    
+
     queryset = EventList.objects.all()
     serializer_class = EventListSerializer
-    
+
     def get_permissions(self):
         permission_classes = []
         if self.action == 'create':
@@ -132,7 +131,7 @@ class EventListViewSet(viewsets.ModelViewSet):
         serializer.is_valid(raise_exception=True)
         serializer.save()
         return Response({'new_event': serializer.data})
-    
+
     def update(self, request, *args, **kwargs):
         pk = kwargs.get("pk", None)
         if not pk:
@@ -142,7 +141,7 @@ class EventListViewSet(viewsets.ModelViewSet):
             instance = EventList.objects.get(pk=pk)
         except:
             return Response({"Ошибка": "Событие не существует!"})
-        
+
         serializer = EventListSerializer(data=request.data, instance=instance)
         serializer.is_valid(raise_exception=True)
         serializer.save()

@@ -19,11 +19,32 @@ class EventRegistrationViewSet(viewsets.ModelViewSet):
         return EventRegistration.objects.filter(user_id=user)
 
     def create(self, request, *args, **kwargs):
-        serializer = EventRegistrationSerializer(data=request.data)
-        serializer.is_valid(raise_exception=True)
-        serializer.save()
-        return Response({'event_registration': serializer.data})
+        user = (Token.objects.get(access_token=request.auth)).user_id
 
+        if (user.first_name == request.data['user_id']['first_name']
+            and user.last_name == request.data['user_id']['last_name']
+            and user.email == request.data['user_id']['email']):
+                serializer = EventRegistrationSerializer(data=request.data)
+                serializer.is_valid(raise_exception=True)
+                serializer.save()
+                return Response({'event_registration': serializer.data})
+        else:
+            return Response({'Ошибка': "Неверный пользователь"})
+        
+    def destroy(self, request, *args, **kwargs):
+        pk = kwargs.get("pk", None)
+        if not pk:
+            return Response({"Ошибка": "События не существует!"})
+        
+        user_register_event = EventRegistration.objects.get(pk=pk)
+        if user_register_event.user_id == self.request.user:
+            user_register_event.delete()
+            return Response({"Успех": "Вы успешно отменили запись на данное событие!"})
+        else:
+            return Response({"Ошибка": "Вы не зарегистрированы на данное событие!"})
+
+
+    
 
 
 @api_view(['POST'])
@@ -53,19 +74,18 @@ def user_login(request):
             'username': user.username
         })
 
-        token = Token.objects.create(user_id=user)
+        token, created = Token.objects.get_or_create(user_id=user)
         token.refresh_token = str(refresh)
         token.access_token = str(refresh.access_token)
         token.save()
         
         return Response({
-            'refresh': str(refresh),
-            'access': str(refresh.access_token),
+            'refresh': f'{token.refresh_token}',
+            'access': f'{token.access_token}',
         })
     
 
 @api_view(['POST'])
-@permission_classes([IsAuthenticated])
 def user_logout(request):
     if request.method == 'POST':
         refresh_token = request.data.get('refresh_token')
@@ -80,3 +100,27 @@ def user_logout(request):
         except Exception:
             return Response({'Ошибка': 'Неверный Refresh токен'})
         return Response({'Успех': 'Выход из системы произведен'})
+    
+
+@api_view(['POST'])
+def user_refresh_token(request):
+    if request.method == 'POST':
+        refresh_token = request.data.get('refresh_token')
+        if not refresh_token:
+            return Response({'Ошибка': 'Необходим Refresh токен'})
+        try:
+            token = RefreshToken(refresh_token)
+            access_token = str(token.access_token)
+
+            token = Token.objects.get(refresh_token=str(token))
+            token.access_token = access_token
+            token.save()
+
+        except Exception:
+            return Response({'Ошибка': 'Неверный Refresh токен'})
+        return Response({'Успех': 'Access token обновлен',
+                         'access_token': f'{token.access_token}' })
+    
+
+
+

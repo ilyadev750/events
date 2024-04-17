@@ -112,7 +112,7 @@ class EventListViewSet(viewsets.ModelViewSet):
     
     queryset = EventList.objects.all()
     serializer_class = EventListSerializer
-
+    
     def get_permissions(self):
         permission_classes = []
         if self.action == 'create':

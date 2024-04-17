@@ -31,7 +31,7 @@ class City(models.Model):
     
 
 class Location(models.Model):
-    
+
     location_name = models.CharField(
         max_length=400, verbose_name="Название места"
     )

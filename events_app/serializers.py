@@ -53,7 +53,7 @@ class EventListSerializer(serializers.ModelSerializer):
     event_id = EventSerializer(many=False)
     category_id = CategorySerializer(many=False)
     location_id = LocationSerializer(many=False)
-
+    
     class Meta: 
         model = EventList
         fields = "__all__"

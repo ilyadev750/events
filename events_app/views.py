@@ -1,4 +1,5 @@
 from rest_framework import viewsets
+from rest_framework import status
 from rest_framework.views import APIView
 from rest_framework.permissions import IsAuthenticated, IsAdminUser
 from rest_framework.response import Response
@@ -50,7 +51,7 @@ class CityAPIView(APIView):
         try:
             instance = City.objects.get(pk=pk)
             instance.delete()
-            return Response({"Успех": "Город удален!"})
+            return Response({"Успех": "Город удален!",}, status=status.HTTP_204_NO_CONTENT)
         except:
             return Response({"Ошибка": "Город не существует!"})
 

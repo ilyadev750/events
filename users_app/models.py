@@ -4,6 +4,7 @@ from events_app.models import EventList
 
 
 class Token(models.Model):
+    """Модель JWT токена"""
 
     user_id = models.ForeignKey(
         User, on_delete=models.CASCADE, verbose_name="Пользователь"
@@ -25,6 +26,7 @@ class Token(models.Model):
 
 
 class EventRegistration(models.Model):
+    """Модель регистрации на мероприятие"""
     event_list_id = models.ForeignKey(
         EventList, on_delete=models.CASCADE, verbose_name="Событие"
         )

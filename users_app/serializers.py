@@ -6,13 +6,14 @@ from events_app.serializers import EventListSerializer
 
 
 class UserSerializer(serializers.ModelSerializer):
-
+    """Сериализатор модели пользователя"""
     class Meta:
         model = User
         fields = ('username', 'first_name', 'last_name', 'email', 'password')
         extra_kwargs = {'password': {'write_only': True}}
 
     def create(self, validated_data):
+        """Создание нового пользователя"""
         user = User(
             username=validated_data['username'],
             first_name=validated_data['first_name'],
@@ -25,13 +26,17 @@ class UserSerializer(serializers.ModelSerializer):
 
 
 class UserEventSerializer(serializers.ModelSerializer):
-
+    """Сериализатор модели пользователя. Конкретно тех
+    данных, которые необходимы для регистрации на
+    мероприятие"""
     class Meta:
         model = User
         fields = ('first_name', 'last_name', 'email')
 
 
 class EventRegistrationSerializer(serializers.ModelSerializer):
+    """Сериализатор регистрации пользователя на
+    мероприятие"""
     event_list_id = EventListSerializer(many=False)
     user_id = UserEventSerializer(many=False)
 
@@ -40,6 +45,10 @@ class EventRegistrationSerializer(serializers.ModelSerializer):
         fields = "__all__"
 
     def create(self, validated_data):
+        """Создать регистрацию на мероприятие. Производится
+        получение объектов из БД. В случае, если хотя бы один
+        объект не будет найден, запись на мероприятие
+        осуществлена не будет"""
         event_list_id = validated_data.pop('event_list_id')
         user_id = validated_data.pop('user_id')
         event = event_list_id.pop('event_id')

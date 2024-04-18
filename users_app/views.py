@@ -10,15 +10,20 @@ from rest_framework import viewsets
 
 
 class EventRegistrationViewSet(viewsets.ModelViewSet):
+    """Представление регистрации на мероприятие"""
     queryset = EventRegistration.objects.all()
     serializer_class = EventRegistrationSerializer
     permission_classes = (IsAuthenticated, )
 
     def get_queryset(self):
+        """Получить список только тех мероприятий,
+        на которые пользователь зарегистрирован"""
         user = self.request.user
         return EventRegistration.objects.filter(user_id=user)
 
     def create(self, request, *args, **kwargs):
+        """Создать регистрацию на мероприятие. Проверка,
+        чтобы исключить запись другого пользователя"""
         user = (Token.objects.get(access_token=request.auth)).user_id
 
         if (user.first_name == request.data['user_id']['first_name']
@@ -33,8 +38,10 @@ class EventRegistrationViewSet(viewsets.ModelViewSet):
                 status=status.HTTP_201_CREATED)
         else:
             return Response({'Ошибка': "Неверный пользователь"})
-    
+
     def destroy(self, request, *args, **kwargs):
+        """Отменить регистрацию на мероприятие. Отменить
+        можно только свои записи, но не чужие"""
         pk = kwargs.get("pk", None)
         if not pk:
             return Response({"Ошибка": "События не существует!"})
@@ -54,6 +61,7 @@ class EventRegistrationViewSet(viewsets.ModelViewSet):
 @api_view(['POST'])
 @permission_classes([AllowAny])
 def register_user(request):
+    """Регистрация пользователя"""
     if request.method == 'POST':
         serializer = UserSerializer(data=request.data)
         if serializer.is_valid():
@@ -65,13 +73,15 @@ def register_user(request):
 @api_view(['POST'])
 @permission_classes([AllowAny])
 def user_login(request):
+    """Аутентификация пользователя, получение и
+    сохранение JWT токенов"""
     if request.method == 'POST':
         username = request.data.get('username')
         password = request.data.get('password')
         user = authenticate(username=username, password=password)
         if not user:
             return Response({"Ошибка": "Неверное имя пользователя или пароль"})
-        
+
         refresh = RefreshToken.for_user(user)
         refresh.payload.update({
             'user_id': user.id,
@@ -91,6 +101,7 @@ def user_login(request):
 
 @api_view(['POST'])
 def user_logout(request):
+    """Выход из системы, удаление JWT токенов"""
     if request.method == 'POST':
         refresh_token = request.data.get('refresh_token')
         if not refresh_token:
@@ -108,6 +119,7 @@ def user_logout(request):
 
 @api_view(['POST'])
 def user_refresh_token(request):
+    """Получить новый access токен"""
     if request.method == 'POST':
         refresh_token = request.data.get('refresh_token')
         if not refresh_token:
@@ -122,6 +134,8 @@ def user_refresh_token(request):
 
         except Exception:
             return Response({'Ошибка': 'Неверный Refresh токен'})
-        return Response({'Успех': 'Access token обновлен',
-                         'access_token': f'{token.access_token}'},
-                         status=status.HTTP_200_OK)
+        return Response({
+            'Успех': 'Access token обновлен',
+            'access_token': f'{token.access_token}'
+            },
+            status=status.HTTP_200_OK)

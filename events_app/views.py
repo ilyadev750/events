@@ -10,9 +10,12 @@ from .serializers import (CitySerializer, CategorySerializer,
 
 
 class CityAPIView(APIView):
+    """Представление города"""
     permission_classes = (IsAdminUser, )
 
     def get(self, request, *args, **kwargs):
+        """Получить конкретный город или 
+        список всех городов"""
         pk = kwargs.get("pk", None)
 
         if pk:
@@ -23,12 +26,14 @@ class CityAPIView(APIView):
             return Response({'cities': CitySerializer(cities, many=True).data})
 
     def post(self, request):
+        """Создать город"""
         serializer = CitySerializer(data=request.data)
         serializer.is_valid(raise_exception=True)
         serializer.save()
         return Response({'city': serializer.data})
 
     def put(self, request, *args, **kwargs):
+        """Поменять город"""
         pk = kwargs.get("pk", None)
         if not pk:
             return Response({"error": "method PUT not allowed!"})
@@ -44,6 +49,7 @@ class CityAPIView(APIView):
         return Response({'city': serializer.data})
 
     def delete(self, request, *args, **kwargs):
+        """Удалить город"""
         pk = kwargs.get("pk", None)
         if not pk:
             return Response({"Ошибка": "Выберите правильный город!"})
@@ -57,16 +63,24 @@ class CityAPIView(APIView):
 
 
 class CategoryViewSet(viewsets.ModelViewSet):
+    """Представление категорий мероприятий.
+    CRUD операции с мероприятиями"""
     queryset = Category.objects.all()
     serializer_class = CategorySerializer
     permission_classes = (IsAdminUser, )
 
 
 class EventViewSet(viewsets.ModelViewSet):
+    """Представление событий. CRUD операции
+    с событиями"""
     queryset = Event.objects.all()
     serializer_class = EventSerializer
 
     def get_permissions(self):
+        """Для администратора доступны все
+        права. Для обычного пользователя
+        доступен только метод GET
+        """
         permission_classes = []
         if self.action == 'create':
             permission_classes = [IsAdminUser]
@@ -82,17 +96,20 @@ class EventViewSet(viewsets.ModelViewSet):
 
 
 class LocationViewSet(viewsets.ModelViewSet):
+    """Представление локаций мероприятий"""
     queryset = Location.objects.all()
     serializer_class = LocationSerializer
     permission_classes = (IsAdminUser, )
 
     def create(self, request):
+        """Создать локацию"""
         serializer = LocationSerializer(data=request.data)
         serializer.is_valid(raise_exception=True)
         serializer.save()
         return Response({'location': serializer.data})
 
     def update(self, request, *args, **kwargs):
+        """Обновить локацию"""
         pk = kwargs.get("pk", None)
         if not pk:
             return Response({"Ошибка": "Неверно выбрана локация!"})
@@ -109,11 +126,16 @@ class LocationViewSet(viewsets.ModelViewSet):
 
 
 class EventListViewSet(viewsets.ModelViewSet):
-
+    """Представление списка всех событий по
+    датам и времени"""
     queryset = EventList.objects.all()
     serializer_class = EventListSerializer
 
     def get_permissions(self):
+        """Для администратора доступны все
+        права. Для обычного пользователя
+        доступен только метод GET
+        """
         permission_classes = []
         if self.action == 'create':
             permission_classes = [IsAdminUser]
@@ -128,12 +150,14 @@ class EventListViewSet(viewsets.ModelViewSet):
         return [permission() for permission in permission_classes]
 
     def create(self, request):
+        """Создать событие в конкретное время"""
         serializer = EventListSerializer(data=request.data)
         serializer.is_valid(raise_exception=True)
         serializer.save()
         return Response({'new_event': serializer.data})
 
     def update(self, request, *args, **kwargs):
+        """Поменять событие"""
         pk = kwargs.get("pk", None)
         if not pk:
             return Response({"Ошибка": "Неверно выбрано событие!"})

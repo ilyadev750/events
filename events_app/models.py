@@ -3,7 +3,7 @@ import datetime
 
 
 class Category(models.Model):
-
+    """Модель категории"""
     category_name = models.CharField(
         max_length=100, verbose_name="Категория"
     )
@@ -17,7 +17,7 @@ class Category(models.Model):
 
 
 class City(models.Model):
-
+    """Модель города"""
     city_name = models.CharField(
         max_length=100, verbose_name="Город"
     )
@@ -31,7 +31,7 @@ class City(models.Model):
 
 
 class Location(models.Model):
-
+    """Модель локации"""
     location_name = models.CharField(
         max_length=400, verbose_name="Название места"
     )
@@ -49,7 +49,7 @@ class Location(models.Model):
 
 
 class Event(models.Model):
-
+    """Модель события"""
     event_name = models.CharField(
         max_length=200, verbose_name="Название мероприятия"
     )
@@ -63,7 +63,7 @@ class Event(models.Model):
 
 
 class EventList(models.Model):
-
+    """Модель списка событий"""
     event_id = models.ForeignKey(
         Event, on_delete=models.CASCADE, verbose_name="Мероприятие"
         )

@@ -108,7 +108,7 @@ class EventsTests(APITestCase):
         self.assertEqual(Location.objects.count(), 0)
 
     def test_crud_eventlist(self):
-
+        
         event_list_url = '/api/v1/events-list/'
         self.client.post(event_list_url, event_list_data, format='json')
         event_list_get = self.client.get(f'{event_list_url}1/', format='json')

@@ -28,10 +28,12 @@ class EventRegistrationViewSet(viewsets.ModelViewSet):
             serializer = EventRegistrationSerializer(data=request.data)
             serializer.is_valid(raise_exception=True)
             serializer.save()
-            return Response({'event_registration': serializer.data})
+            return Response(
+                {'event_registration': serializer.data},
+                status=status.HTTP_201_CREATED)
         else:
             return Response({'Ошибка': "Неверный пользователь"})
-
+    
     def destroy(self, request, *args, **kwargs):
         pk = kwargs.get("pk", None)
         if not pk:
@@ -69,7 +71,7 @@ def user_login(request):
         user = authenticate(username=username, password=password)
         if not user:
             return Response({"Ошибка": "Неверное имя пользователя или пароль"})
-
+        
         refresh = RefreshToken.for_user(user)
         refresh.payload.update({
             'user_id': user.id,
@@ -121,4 +123,5 @@ def user_refresh_token(request):
         except Exception:
             return Response({'Ошибка': 'Неверный Refresh токен'})
         return Response({'Успех': 'Access token обновлен',
-                         'access_token': f'{token.access_token}'})
+                         'access_token': f'{token.access_token}'},
+                         status=status.HTTP_200_OK)

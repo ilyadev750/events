@@ -1,17 +1,46 @@
 {
+    "event_registration": {
+        "id": 24,
+        "event_list_id": {
+            "id": 9,
+            "event_id": {
+                "id": 1,
+                "event_name": "Ничего не бойся, я с тобой"
+            },
+            "category_id": {
+                "id": 3,
+                "category_name": "Мюзикл"
+            },
+            "location_id": {
+                "city_id": {
+                    "id": 1,
+                    "city_name": "Москва"
+                },
+                "location_name": "Московский Дом Молодежи"
+            },
+            "date": "2024-04-15",
+            "time": "14:00:00",
+            "price": 3000
+        },
+        "user_id": {
+            "first_name": "И",
+            "last_name": "П",
+            "email": "w@ya.ru"
+        },
+        "is_registered": true
+    }
+}
+
+{
     "event_list_id": {
-        "id": 2,
         "event_id": {
-              "id": 1,
               "event_name": "Ничего не бойся, я с тобой"
          },
          "category_id": {
-             "id": 3,
              "category_name": "Мюзикл"
          },
          "location_id": {
              "city_id": {
-                 "id": 1,
                  "city_name": "Москва"
              },
              "location_name": "Московский Дом Молодежи"
@@ -19,6 +48,65 @@
          "date": "2024-04-15",
          "time": "14:00:00",
          "price": 3000
+    },
+    "user_id": {
+        "first_name": "И",
+        "last_name": "П",
+        "email": "w@ya.ru"
+    },
+    "is_registered": "True"
+}
+
+
+{
+    "id": 3,
+    "event_id": {
+        "id": 2,
+        "event_name": "Футбольный матч 'ФК Зенит' - 'ФК Спартак'"
+    },
+    "category_id": {
+        "id": 4,
+        "category_name": "Спорт"
+    },
+    "location_id": {
+        "city_id": {
+            "id": 2,
+            "city_name": "Санкт-Петербург"
+        },
+        "location_name": "Стадион Газпром Арена"
+    },
+    "date": "2024-04-16",
+    "time": "15:00:00",
+    "price": 2000
+}
+
+
+
+
+
+
+
+{
+    "event_list_id": {
+        "id": 3,
+        "event_id": {
+             "id": 2,
+             "event_name": "Футбольный матч 'ФК Зенит' - 'ФК Спартак'"
+         },
+         "category_id": {
+             "id": 4,
+             "category_name": "Спорт"
+         },
+         "location_id": {
+             "city_id": {
+                 "id": 2,
+                 "city_name": "Санкт-Петербург"
+             },
+             "location_name": "Стадион Газпром Арена"
+         },
+         "date": "2024-04-16",
+         "time": "15:00:00",
+         "price": 2000
     },
     "user_id": {
         "first_name": "И",

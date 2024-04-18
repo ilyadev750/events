@@ -1,4 +1,5 @@
 from rest_framework import status
+from django.urls import reverse
 from .info import (superuser_data, category_data,
                    city_data, event_data, location_data,
                    location_data_changed, event_list_data,
@@ -14,17 +15,13 @@ class EventsTests(APITestCase):
         self.admin = User.objects.create_superuser(username='super_ilya',
                                                    email='pp@ya.ru',
                                                    password='qwerty')
-        self.token_url = "/api/token/"
+        self.login_url = reverse("login")
         response = self.client.post(
-            self.token_url, superuser_data, format='json'
+            self.login_url, superuser_data, format='json'
             )
-        self.token = Token.objects.create(
-            user_id=self.admin,
-            access_token=response.data.get("access"),
-            refresh_token=response.data.get("refresh")
-            )
+        token = Token.objects.get(user_id=self.admin)
         self.client.credentials(
-            HTTP_AUTHORIZATION=f'Bearer {self.token.access_token}'
+            HTTP_AUTHORIZATION=f'Bearer {token.access_token}'
             )
 
     def test_crud_category(self):
@@ -141,7 +138,6 @@ class EventsTests(APITestCase):
             event_list_put.data['event']['location_id']['city_id']['city_name'],
             'Санкт-Петербург'
         )
-
 
         event_list_delete = self.client.delete(
             f'{event_list_url}1/', format='json'
